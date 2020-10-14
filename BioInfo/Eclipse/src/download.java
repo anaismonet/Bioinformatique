@@ -1,6 +1,8 @@
 import jxl.write.WritableWorkbook;
 import jxl.write.WriteException;
 
+import org.apache.commons.io.FileUtils;
+
 import java.io.*;
 import java.net.URL;
 import java.nio.file.Files;
@@ -131,7 +133,7 @@ class download implements Runnable{
                 if (exist.exists()) {
                     continue;
                 }
-
+                /*
                 I.AddMsgLog("treating " + list_Name.get(r));
                 try {
                     fna = new URL(list_path.get(r)).openStream();
@@ -143,7 +145,19 @@ class download implements Runnable{
                     Files.copy(fna, Paths.get("DNA_file.gbff.gz"), StandardCopyOption.REPLACE_EXISTING);
                 } catch (IOException e) {
                     e.printStackTrace();
+                }*/
+                String filenameDNA = "DownloadDone.txt";
+                try {
+                    System.out.println(list_path.get(r));
+                    FileUtils.copyURLToFile(
+                            new URL(list_path.get(r)),
+                            new File(Paths.get("DNA_file.gbff.gz").toString()));
+                    //Files.copy(fna, Paths.get("DNA_file.gbff.gz"), StandardCopyOption.REPLACE_EXISTING);
+                    System.out.println("hello2");
+                } catch (IOException e) {
+                    e.printStackTrace();
                 }
+                
                 u.gunzipIt("DNA_file.gbff.gz", filenameDNA);
                 File file_to_delete = new File("DNA_file.gbff.gz");
                 file_to_delete.delete();
