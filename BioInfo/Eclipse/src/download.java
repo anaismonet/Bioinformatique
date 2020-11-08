@@ -2,6 +2,7 @@ import jxl.write.WritableWorkbook;
 import jxl.write.WriteException;
 
 import org.apache.commons.io.FileUtils;
+import org.apache.commons.io.IOUtils;
 
 import java.io.*;
 import java.net.URL;
@@ -44,34 +45,40 @@ class download implements Runnable{
         InputStream plasmi = null;
         InputStream viruse = null;
         InputStream prok = null;
-
         try {
             //Download of .txt we need to parse Genbank if it's not already done.
-            File eukar = new File("eukaryotes.txt");
+            File eukar = new File("Eukaryotes.txt");
             File summary = new File("summary.txt");
-            File plasm = new File("plasmids.txt");
-            File virus= new File("viruses.txt");
-            File proka = new File("prokaryotes.txt");
+            File plasm = new File("Plasmids.txt");
+            File virus= new File("Viruses.txt");
+            File proka = new File("Prokaryotes.txt");
+
             if(!eukar.exists()) {
                 euka = new URL("ftp://ftp.ncbi.nlm.nih.gov/genomes/GENOME_REPORTS/eukaryotes.txt").openStream();
+                System.out.println("Downloading Eukryote.txt...");
                 Files.copy(euka, Paths.get("Eukaryotes.txt"), StandardCopyOption.REPLACE_EXISTING);
             }
             if(!proka.exists()) {
                 prok = new URL("ftp://ftp.ncbi.nlm.nih.gov/genomes/GENOME_REPORTS/prokaryotes.txt").openStream();
+                System.out.println("Downloading Prokaryotes.txt...");
                 Files.copy(prok, Paths.get("Prokaryotes.txt"), StandardCopyOption.REPLACE_EXISTING);
             }
             if(!summary.exists()) {
                 summar = new URL("https://ftp.ncbi.nlm.nih.gov/genomes/refseq/assembly_summary_refseq.txt").openStream();
+                System.out.println("Downloading summary.txt...");
                 Files.copy(summar, Paths.get("summary.txt"), StandardCopyOption.REPLACE_EXISTING);
             }
             if(!plasm.exists()) {
                 plasmi = new URL("ftp://ftp.ncbi.nlm.nih.gov/genomes/GENOME_REPORTS/plasmids.txt").openStream();
+                System.out.println("Downloading Plasmids.txt...");
                 Files.copy(plasmi, Paths.get("Plasmids.txt"), StandardCopyOption.REPLACE_EXISTING);
             }
             if(!virus.exists()) {
                 viruse = new URL("ftp://ftp.ncbi.nlm.nih.gov/genomes/GENOME_REPORTS/viruses.txt").openStream();
+                System.out.println("Downloading Viruses.txt...");
                 Files.copy(viruse, Paths.get("Viruses.txt"), StandardCopyOption.REPLACE_EXISTING);
             }
+
             list_type.add("Eukaryotes");
             list_type.add("Plasmids");
             list_type.add("Prokaryotes");
@@ -81,7 +88,7 @@ class download implements Runnable{
             e.printStackTrace();
         }
 
-        InputStream fna = null;
+        //InputStream fna = null;
         String path;
         List<String> list_Name = new ArrayList<>();
         List<String> list_Group = new ArrayList<>();
@@ -89,13 +96,14 @@ class download implements Runnable{
         List<String> list_SubGroup = new ArrayList<>();
         // advancement
         int avancement = 0;
-
         // for all type (Eukaryote ...) but only work for Eukaryote
         for(int p = 0; p<list_type.size();p++) {
             try {
+
                 //update of the progressbar (doesn't work)
                 I.setPercentage(avancement);
                 I.progressBar.setVisible(true);
+                System.out.println("file treated "+Paths.get(list_type.get(p)+".txt"));
                 //finding NC in .txt files corresponding to the files we need to download
                 List<List> list_charac = s.findInFile(Paths.get(list_type.get(p)+".txt"), "NC_", 0);
 
@@ -130,19 +138,18 @@ class download implements Runnable{
                 createstruct.create_folder(link);
                 // create xls file
                 File exist = new File(link + "/" + list_Name.get(r) + ".xlsx");
+                System.out.println("create folder : " +exist);
                 if (exist.exists()) {
                     continue;
                 }
-                /*
+
                 I.AddMsgLog("treating " + list_Name.get(r));
+                /*
                 try {
                     fna = new URL(list_path.get(r)).openStream();
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
-                String filenameDNA = "testDone.txt";
-                try {
-                    Files.copy(fna, Paths.get("DNA_file.gbff.gz"), StandardCopyOption.REPLACE_EXISTING);
+                    System.out.println(list_path.get(r));
+
+
                 } catch (IOException e) {
                     e.printStackTrace();
                 }*/
@@ -153,11 +160,10 @@ class download implements Runnable{
                             new URL(list_path.get(r)),
                             new File(Paths.get("DNA_file.gbff.gz").toString()));
                     //Files.copy(fna, Paths.get("DNA_file.gbff.gz"), StandardCopyOption.REPLACE_EXISTING);
-                    System.out.println("hello2");
+
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
-                
                 u.gunzipIt("DNA_file.gbff.gz", filenameDNA);
                 File file_to_delete = new File("DNA_file.gbff.gz");
                 file_to_delete.delete();
@@ -180,7 +186,6 @@ class download implements Runnable{
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
-
                 WritableWorkbook xls_file = s.create_xls_file(link + "/" + list_Name.get(r) + ".xlsx");
                 boolean something_to_write = false;
                 int nb_inv_CDS;

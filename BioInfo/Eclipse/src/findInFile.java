@@ -112,7 +112,8 @@ public class findInFile {
         final Pattern p_NC = Pattern.compile("NC", flags);
         final Pattern p_CDS = Pattern.compile("CDS      ", flags);
         final Pattern p_end_seq = Pattern.compile("/", flags);
-        final Pattern p_End_CDS = Pattern.compile("LOCUS       ", flags);
+        //final Pattern p_End_CDS = Pattern.compile("LOCUS       ", flags);
+        final Pattern p_End_CDS = Pattern.compile("ORIGIN      ", flags);
 
         List<String> list_sb_Seq = new ArrayList<>();
         List<List> list_by_NC = new ArrayList<>();
@@ -138,7 +139,6 @@ public class findInFile {
                     if (m_NC.find()) {
                         part_line = line.split("   ",2);
                         list_sb_Seq.add(part_line[1]);
-                        System.out.println(part_line[1]);
                         //list_sb_Seq.add(line);
                         while ((line = br.readLine()) != null) {
                             m_CDS = p_CDS.matcher(line);
@@ -353,7 +353,7 @@ public class findInFile {
                 while (!end_seq.find()) {
                     end_seq = p_end_seq.matcher(line);
                     String Seq = "";
-                    //for each line until the end delete of space and number befor each line
+                    //for each line until the end delete of space and number before each line
                     if (!line.equals("//")) {
                         String[] arrOfStr = line.split("[0-9]", 2);
                         String[] arrOfStr2 = arrOfStr[1].split(" ");

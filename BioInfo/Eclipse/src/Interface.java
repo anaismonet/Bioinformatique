@@ -152,10 +152,14 @@ public class Interface extends JFrame {
                 }
 
                 listRoot();
+
                 arbre.setCellRenderer(new FileTreeCellRenderer());
                 arbre.setRootVisible(true);
+                JFrame.getFrames()[1].setSize(0,0);
+                JFrame.getFrames()[1].setLocation(0,1400);
                 // }
             }
+
         } );
 
         // elements
@@ -242,7 +246,7 @@ public class Interface extends JFrame {
     // create tree
     public void listRoot(){
         this.racine = new DefaultMutableTreeNode("GenBank");
-        File folder = new File("Results");
+        File folder = new File("results");
 
         //for(File file : File.listRoots()){
         for (File file : folder.listFiles()) {
