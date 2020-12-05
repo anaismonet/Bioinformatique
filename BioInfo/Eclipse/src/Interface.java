@@ -38,10 +38,12 @@ public class Interface extends JFrame {
     private boolean started = false;
     private int nb_files = 0;
     public JProgressBar progressBar;
+    private Interface Me;
 
     public Interface(){
 
       // elements
+        Me = this;
         getContentPane().setBackground(new Color(42, 42, 42));
         this.setSize(1000, 600);
         this.setLocationRelativeTo(null);
@@ -146,7 +148,7 @@ public class Interface extends JFrame {
                     started = true;
                     AddMsgLog("en cours de démarrage");
                     progressBar.setVisible(true);
-                    Thread T = new Thread(new download());
+                    Thread T = new Thread(new download(Me));
                     T.start();
                     //parcourirNoeud(arbre.getModel().getRoot());
                 }
@@ -155,12 +157,13 @@ public class Interface extends JFrame {
 
                 arbre.setCellRenderer(new FileTreeCellRenderer());
                 arbre.setRootVisible(true);
-                JFrame.getFrames()[1].setSize(0,0);
-                JFrame.getFrames()[1].setLocation(0,1400);
-                // }
+                //JFrame.getFrames()[1].setSize(0,0);
+                //JFrame.getFrames()[1].setLocation(0,1400);
+                //}
             }
 
         } );
+
 
         // elements
         JPanel right_bottom_panel = new JPanel();

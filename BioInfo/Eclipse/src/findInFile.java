@@ -12,7 +12,7 @@ import static java.lang.StrictMath.round;
 // get Name, Group, SubGroup where there is chromosome:NC_
 public class findInFile {
 
-    public static final List<List> findInFile(final Path file, final String pattern, final int flags)
+    public static final List<List> findInFile(final Path file, final String pattern, final int flags, final int file_type)
             throws IOException {
         final Pattern p = Pattern.compile(pattern, flags);
         final List<String> list_Group = new ArrayList<>();
@@ -32,12 +32,43 @@ public class findInFile {
             while ((line = br.readLine()) != null) {
                 m = p.matcher(line);
                 // find NC_
-                if (m.find()) {
-                    line_parsed = line.split("\t", 7);
-                    list_Group.add(line_parsed[4]);
-                    list_SubGroup.add(line_parsed[5]);
-                    name_parsed = line_parsed[0].split(" ", 3);
-                    list_Name.add(name_parsed[0] + " " + name_parsed[1]);
+                switch (file_type) {
+                    case 0: // Eukaryote
+                        if (m.find()) {
+                            line_parsed = line.split("\t", 7);
+                            list_Group.add(line_parsed[4]);
+                            list_SubGroup.add(line_parsed[5]);
+                            name_parsed = line_parsed[0].split(" ", 3);
+                            list_Name.add(name_parsed[0] + " " + name_parsed[1]);
+                        }
+                        break;
+                    case 1: // Prokaryote
+                        if (m.find()) {
+                            line_parsed = line.split("\t", 7);
+                            list_Group.add(line_parsed[4]);
+                            list_SubGroup.add(line_parsed[5]);
+                            name_parsed = line_parsed[0].split(" ", 3);
+                            list_Name.add(name_parsed[0] + " " + name_parsed[1]);
+                        }
+                        break;
+                    case 2: // Plasmids
+                        if (m.find()) {
+                            line_parsed = line.split("\t", 7);
+                            list_Group.add(line_parsed[4]);
+                            list_SubGroup.add(line_parsed[5]);
+                            name_parsed = line_parsed[0].split(" ", 3);
+                            list_Name.add(name_parsed[0] + " " + name_parsed[1]);
+                        }
+                        break;
+                    case 3: // Viruses
+                        if (m.find()) {
+                            line_parsed = line.split("\t", 7);
+                            list_Group.add(line_parsed[4]);
+                            list_SubGroup.add(line_parsed[5]);
+                            name_parsed = line_parsed[0].split(" ", 3);
+                            list_Name.add(name_parsed[0] + " " + name_parsed[1]);
+                        }
+                        break;
                 }
             }
             try {

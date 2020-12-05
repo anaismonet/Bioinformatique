@@ -15,12 +15,17 @@ import java.util.Arrays;
 import java.util.List;
 
 class download implements Runnable{
+    Interface I;
+
+    public download(Interface I) {
+        this.I = I;
+    }
     @Override
     public void run() {
 
         List<String> list_type = new ArrayList<>();
 
-        Interface I = new Interface();
+        //Interface I = new Interface();
         findInFile s = new findInFile();
         Dezip u = new Dezip();
         stat stat = new stat();
@@ -79,7 +84,7 @@ class download implements Runnable{
                 Files.copy(viruse, Paths.get("Viruses.txt"), StandardCopyOption.REPLACE_EXISTING);
             }
 
-            list_type.add("Eukaryotes");
+            //list_type.add("Eukaryotes");
             list_type.add("Plasmids");
             list_type.add("Prokaryotes");
             list_type.add("Viruses");
@@ -105,7 +110,26 @@ class download implements Runnable{
                 I.progressBar.setVisible(true);
                 System.out.println("file treated "+Paths.get(list_type.get(p)+".txt"));
                 //finding NC in .txt files corresponding to the files we need to download
-                List<List> list_charac = s.findInFile(Paths.get(list_type.get(p)+".txt"), "NC_", 0);
+                int file_type = -1;
+                switch (list_type.get(p)) {
+                    case "Eukaryotes":
+                        file_type = 0;
+                        break;
+                    case "Prokaryotes":
+                        file_type = 1;
+                        break;
+                    case "Plasmids":
+                        file_type = 2;
+                        break;
+                    case "Viruses":
+                        file_type = 3;
+                        break;
+                }
+                if (file_type==-1){
+                    System.exit(0);
+                }
+
+                List<List> list_charac = s.findInFile(Paths.get(list_type.get(p)+".txt"), "NC_", 0,file_type);
 
                 list_Name = list_charac.get(0);
                 list_Group = list_charac.get(1);
@@ -137,7 +161,7 @@ class download implements Runnable{
                 String link = "./results/" +list_type.get(p) + "/" + list_Group.get(r) + "/" + list_SubGroup.get(r);
                 createstruct.create_folder(link);
                 // create xls file
-                File exist = new File(link + "/" + list_Name.get(r) + ".xlsx");
+                File exist = new File(link + "/" + list_Name.get(r) + ".xls");
                 System.out.println("create folder : " +exist);
                 if (exist.exists()) {
                     continue;
@@ -186,7 +210,7 @@ class download implements Runnable{
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
-                WritableWorkbook xls_file = s.create_xls_file(link + "/" + list_Name.get(r) + ".xlsx");
+                WritableWorkbook xls_file = s.create_xls_file(link + "/" + list_Name.get(r) + ".xls");
                 boolean something_to_write = false;
                 int nb_inv_CDS;
                 int nb_ValidCDS_seq = 0;
