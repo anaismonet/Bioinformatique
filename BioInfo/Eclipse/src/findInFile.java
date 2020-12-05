@@ -23,6 +23,9 @@ public class findInFile {
         String line;
         String line_parsed[];
         String name_parsed[];
+        String name_parsed1[];
+        String name_parsed2[];
+        String name_parsed3[];
 
         Matcher m;
 
@@ -44,11 +47,14 @@ public class findInFile {
                         break;
                     case 1: // Prokaryote
                         if (m.find()) {
-                            line_parsed = line.split("\t", 7);
+                            line_parsed = line.split("\t", 8);
                             list_Group.add(line_parsed[4]);
-                            list_SubGroup.add(line_parsed[5]);
-                            name_parsed = line_parsed[0].split(" ", 3);
-                            list_Name.add(name_parsed[0] + " " + name_parsed[1]);
+                            list_SubGroup.add(line_parsed[5].replaceAll("/", "_"));
+                            name_parsed = line_parsed[0].split("-", 2);
+                            name_parsed1 = name_parsed[0].split("\\s\\(", 2);
+                            name_parsed2 = name_parsed1[0].split("/", 2);
+                            name_parsed3 = name_parsed2[0].split("\\s\\[", 2);
+                            list_Name.add(name_parsed3[0]);
                         }
                         break;
                     case 2: // Plasmids
@@ -62,11 +68,14 @@ public class findInFile {
                         break;
                     case 3: // Viruses
                         if (m.find()) {
-                            line_parsed = line.split("\t", 7);
+                            line_parsed = line.split("\t", 8);
                             list_Group.add(line_parsed[4]);
                             list_SubGroup.add(line_parsed[5]);
-                            name_parsed = line_parsed[0].split(" ", 3);
-                            list_Name.add(name_parsed[0] + " " + name_parsed[1]);
+                            name_parsed = line_parsed[0].split("-", 2);
+                            name_parsed1 = name_parsed[0].split("\\s\\(", 2);
+                            name_parsed2 = name_parsed1[0].split("/", 2);
+                            name_parsed3 = name_parsed2[0].split("\\s\\[", 2);
+                            list_Name.add(name_parsed3[0]);
                         }
                         break;
                 }
@@ -185,7 +194,9 @@ public class findInFile {
                                         break;
                                     }
                                     part_line = line.split("                     ",2);
-                                    name_seq = name_seq + part_line[1];
+                                    if (name_seq.matches("\\d*\\.\\.\\d*")){
+                                        name_seq = name_seq + part_line[1];
+                                    }
                                 }
                                 int mode = stat.cds_mode(name_seq);
                                 boolean test = stat.test_cds(name_seq,mode);

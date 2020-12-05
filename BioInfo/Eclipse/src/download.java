@@ -85,9 +85,9 @@ class download implements Runnable{
             }
 
             //list_type.add("Eukaryotes");
-            list_type.add("Plasmids");
+            //list_type.add("Plasmids");
             list_type.add("Prokaryotes");
-            list_type.add("Viruses");
+            ///list_type.add("Viruses");
 
         } catch (IOException e) {
             e.printStackTrace();
@@ -148,7 +148,9 @@ class download implements Runnable{
                     if (path.length() > 5) {
                         pathName1 = path.split("\t", 2);
                         pathName = pathName1[0].split("/", 10);
-                        list_path.add(pathName1[0] + "/" + pathName[9] + "_genomic.gbff.gz");
+                        if (pathName.length > 6){
+                            list_path.add(pathName1[0] + "/" + pathName[9] + "_genomic.gbff.gz");
+                        }
                     }
                 }
                 System.out.println(Arrays.toString(list_path.toArray()));
