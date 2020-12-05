@@ -192,6 +192,37 @@ class download implements Runnable{
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
+
+                //NEW
+                String[] link_name = link.split("/");
+                String link_name_temp=link_name[0] + "/";
+                for (int i=1;i<link_name.length;i++){
+                    link_name_temp = link_name_temp+"/"+link_name[i];
+                    File existe = new File(link_name_temp+ ".xls");
+                    if (existe.exists()) {
+                        System.out.println("file already exist: " +exist);
+                        continue;
+                    }
+                    WritableWorkbook xls_file_general = s.create_xls_file(link_name_temp+".xls");
+                    xls_file_general = s.write_xlsFile_GI_Folder(xls_file_general,link_name[i]);
+                    if (xls_file_general != null) {
+                        try {
+                            xls_file_general.write();
+                        } catch (IOException e) {
+                            e.printStackTrace();
+                        }
+                        try {
+                            xls_file_general.close();
+                        } catch (IOException e) {
+                            e.printStackTrace();
+                        } catch (WriteException e) {
+                            e.printStackTrace();
+                        }
+                    }
+                    System.out.println("create file: " +exist);
+                }
+                //END NEW
+
                 u.gunzipIt("DNA_file.gbff.gz", filenameDNA);
                 File file_to_delete = new File("DNA_file.gbff.gz");
                 file_to_delete.delete();
@@ -284,6 +315,9 @@ class download implements Runnable{
                 if (xls_file != null) {
                     try {
                         if (something_to_write) {
+                            s.update_xlsFile_GI_Folder("./results/" +list_type.get(p)+".xls",nb_ValidCDS_seq,nb_InvCDS_seq, nb_seq);
+                            s.update_xlsFile_GI_Folder("./results/" +list_type.get(p) + "/" + list_Group.get(r)+".xls",nb_ValidCDS_seq,nb_InvCDS_seq, nb_seq);
+                            s.update_xlsFile_GI_Folder(link+".xls",nb_ValidCDS_seq,nb_InvCDS_seq, nb_seq);
                             xls_file.write();
                         }
                         xls_file.close();

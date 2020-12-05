@@ -5,6 +5,7 @@ import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import jxl.Workbook;
+import jxl.read.biff.BiffException;
 import jxl.write.*;
 import jxl.write.Number;
 import static java.lang.StrictMath.round;
@@ -355,6 +356,73 @@ public class findInFile {
         }
         return xls_file;
     }
+
+    // NEW sam 17h50
+
+    // Write General Information in front of each xls file that resume all data treated in the folder
+    public WritableWorkbook write_xlsFile_GI_Folder(WritableWorkbook xls_file, String NameGroup) {
+        try{
+            //create an Excel sheet
+            WritableSheet excelSheet = xls_file.createSheet("General Information",0);
+            //add something into the Excel sheet
+            Label label = new Label(0, 0, "Information");
+            excelSheet.addCell(label);
+            label = new Label(0, 2, "Group Name");
+            excelSheet.addCell(label);
+            label = new Label(1, 2, NameGroup);
+            excelSheet.addCell(label);
+            label = new Label(0, 4, "Number of CDS sequences");
+            excelSheet.addCell(label);
+            Number number = new Number(1, 4, 0);
+            excelSheet.addCell(number);
+            label = new Label(0, 6, "Number of Invalid CDS");
+            excelSheet.addCell(label);
+            number = new Number(1, 6, 0);
+            excelSheet.addCell(number);
+            label = new Label(0, 8, "Number of genomes");
+            excelSheet.addCell(label);
+            number = new Number(1, 8, 0);
+            excelSheet.addCell(number);
+        } catch (WriteException e) {
+            e.printStackTrace();
+        }
+        return xls_file;
+    }
+
+    // Update General Information in front of each xls file that resume all data treated in the folder
+    public int update_xlsFile_GI_Folder(String pathname, int nb_ValidCDS_seq, int nb_InvCDS_seq, int nb_seq) {
+        try{
+            //open file
+            Workbook wk = Workbook.getWorkbook(new File(pathname));
+            WritableWorkbook wkr = Workbook.createWorkbook(new File(pathname), wk);
+            WritableSheet excelSheet = wkr.getSheet(0);
+            // get value and update
+            WritableCell getcl = excelSheet.getWritableCell(1, 4);
+            Number nb = ( Number ) getcl ;
+            Number number = new Number(1, 4, nb_ValidCDS_seq+nb.getValue());
+            excelSheet.addCell(number);
+            getcl = excelSheet.getWritableCell(1, 6);
+            nb = ( Number ) getcl ;
+            number = new Number(1, 6, nb_InvCDS_seq+nb.getValue());
+            excelSheet.addCell(number);
+            getcl = excelSheet.getWritableCell(1, 8);
+            nb = ( Number ) getcl ;
+            number = new Number(1, 8, nb_seq+nb.getValue());
+            excelSheet.addCell(number);
+            // close file
+            wkr.write();
+            wkr.close();
+        } catch (WriteException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        } catch (BiffException e) {
+            e.printStackTrace();
+        }
+        return 0;
+    }
+
+    // END NEW sam 17h50
 
     // get all the sequence of a genome "ACGTGCACGTAGAC...."
     public List<String> get_seq(final Path file,List<List> list_by_NC, final int flags) {
