@@ -49,7 +49,7 @@ public class findInFile {
                     case 1: // Prokaryote
                         if (m.find()) {
                             line_parsed = line.split("\t", 8);
-                            list_Group.add(line_parsed[4]);
+                            list_Group.add(line_parsed[4].replaceAll("/", "_"));
                             list_SubGroup.add(line_parsed[5].replaceAll("/", "_"));
                             name_parsed = line_parsed[0].split("-", 2);
                             name_parsed1 = name_parsed[0].split("\\s\\(", 2);
@@ -63,7 +63,7 @@ public class findInFile {
                             line_parsed = line.split("\t", 7);
                             if(line_parsed[0].split(" ").length>2){
                                 if( !last_name.equals(line_parsed[0])) {
-                                    list_Group.add(line_parsed[2]);
+                                    list_Group.add(line_parsed[2].replaceAll("/", "_"));
                                     list_SubGroup.add(line_parsed[3].replaceAll("/", "_"));
                                     list_Name.add(line_parsed[0]);
                                     last_name = line_parsed[0];
@@ -74,8 +74,8 @@ public class findInFile {
                     case 3: // Viruses
                         if (m.find()) {
                             line_parsed = line.split("\t", 8);
-                            list_Group.add(line_parsed[4]);
-                            list_SubGroup.add(line_parsed[5]);
+                            list_Group.add(line_parsed[4].replaceAll("/", "_"));
+                            list_SubGroup.add(line_parsed[5].replaceAll("/", "_"));
                             name_parsed = line_parsed[0].split("-", 2);
                             name_parsed1 = name_parsed[0].split("\\s\\(", 2);
                             name_parsed2 = name_parsed1[0].split("/", 2);

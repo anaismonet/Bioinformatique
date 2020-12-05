@@ -159,17 +159,19 @@ class download implements Runnable{
             }
             for (int r = 0; r < list_path.size(); r++) {
                 avancement = p + (int)((r/list_path.size())/list_type.size());
+
+                String Name_genome = list_Name.get(r).replaceAll("/", "_");
                 //create folder
                 String link = "./results/" +list_type.get(p) + "/" + list_Group.get(r) + "/" + list_SubGroup.get(r);
                 createstruct.create_folder(link);
                 // create xls file
-                File exist = new File(link + "/" + list_Name.get(r) + ".xls");
+                File exist = new File(link + "/" + Name_genome + ".xls");
                 System.out.println("create folder : " +exist);
                 if (exist.exists()) {
                     continue;
                 }
 
-                I.AddMsgLog("treating " + list_Name.get(r));
+                I.AddMsgLog("treating " + Name_genome);
                 /*
                 try {
                     fna = new URL(list_path.get(r)).openStream();
@@ -212,7 +214,7 @@ class download implements Runnable{
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
-                WritableWorkbook xls_file = s.create_xls_file(link + "/" + list_Name.get(r) + ".xls");
+                WritableWorkbook xls_file = s.create_xls_file(link + "/" + Name_genome + ".xls");
                 boolean something_to_write = false;
                 int nb_inv_CDS;
                 int nb_ValidCDS_seq = 0;
@@ -278,7 +280,7 @@ class download implements Runnable{
                     }
                     something_to_write = true;
                 }
-                xls_file = s.write_xlsFile_GI(xls_file, list_Name.get(r), nb_ValidCDS_seq,nb_InvCDS_seq, nb_seq);
+                xls_file = s.write_xlsFile_GI(xls_file, Name_genome, nb_ValidCDS_seq,nb_InvCDS_seq, nb_seq);
                 if (xls_file != null) {
                     try {
                         if (something_to_write) {
@@ -293,7 +295,7 @@ class download implements Runnable{
                 }
                 file_to_delete = new File(filenameDNA);
                 file_to_delete.delete();
-                I.AddMsgLog("done with " + list_Name.get(r));
+                I.AddMsgLog("done with " + Name_genome);
                 I.setPercentage((int) (avancement/list_type.size())*100);
                 I.progressBar.setVisible(true);
                 I.listRoot();
