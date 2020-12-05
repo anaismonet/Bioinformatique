@@ -26,6 +26,7 @@ public class findInFile {
         String name_parsed1[];
         String name_parsed2[];
         String name_parsed3[];
+        String last_name = "";
 
         Matcher m;
 
@@ -60,10 +61,14 @@ public class findInFile {
                     case 2: // Plasmids
                         if (m.find()) {
                             line_parsed = line.split("\t", 7);
-                            list_Group.add(line_parsed[4]);
-                            list_SubGroup.add(line_parsed[5]);
-                            name_parsed = line_parsed[0].split(" ", 3);
-                            list_Name.add(name_parsed[0] + " " + name_parsed[1]);
+                            if(line_parsed[0].split(" ").length>2){
+                                if( !last_name.equals(line_parsed[0])) {
+                                    list_Group.add(line_parsed[2]);
+                                    list_SubGroup.add(line_parsed[3].replaceAll("/", "_"));
+                                    list_Name.add(line_parsed[0]);
+                                    last_name = line_parsed[0];
+                                }
+                            }
                         }
                         break;
                     case 3: // Viruses
