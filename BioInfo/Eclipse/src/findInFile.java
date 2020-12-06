@@ -1,4 +1,5 @@
 import java.io.*;
+import java.math.BigInteger;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.*;
@@ -31,6 +32,7 @@ public class findInFile {
 
         Matcher m;
 
+
         try (
                 final BufferedReader br = Files.newBufferedReader(file);
         ) {
@@ -41,6 +43,7 @@ public class findInFile {
                     case 0: // Eukaryote
                         if (m.find()) {
                             line_parsed = line.split("\t", 7);
+
                             list_Group.add(line_parsed[4]);
                             list_SubGroup.add(line_parsed[5]);
                             name_parsed = line_parsed[0].split(" ", 3);
@@ -431,6 +434,8 @@ public class findInFile {
         Pattern p_NC;
         final List<String> list_sb_Seq = new ArrayList<>();
         StringBuffer sb_SubSeq = new StringBuffer();
+
+
         String line;
 
         Matcher m;
@@ -480,8 +485,10 @@ public class findInFile {
                     line =br.readLine();
                 }
                 if(sb_SubSeq.length()!=0) {
-                    list_sb_Seq.add(sb_SubSeq.toString().toUpperCase());
+                      list_sb_Seq.add(sb_SubSeq.toString().toUpperCase());
+
                 }
+                /// 1 400 000 000 - RIP
                 sb_SubSeq.delete(0, sb_SubSeq.length());
                 line = br.readLine();
             }

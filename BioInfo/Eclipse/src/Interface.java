@@ -12,10 +12,7 @@ import javax.swing.JTree;
 import javax.swing.UIManager;
 import javax.swing.event.TreeSelectionEvent;
 import javax.swing.event.TreeSelectionListener;
-import javax.swing.tree.DefaultMutableTreeNode;
-import javax.swing.tree.TreeCellRenderer;
-import javax.swing.tree.TreeNode;
-import javax.swing.tree.TreePath;
+import javax.swing.tree.*;
 import javax.swing.JPanel;
 
 import javax.swing.border.LineBorder;
@@ -30,8 +27,8 @@ import javax.swing.JProgressBar;
 
 
 public class Interface extends JFrame {
-  // variables
-    private JTree arbre;
+    // variables
+    public JTree arbre;
     private DefaultMutableTreeNode racine;
     private JScrollPane scrollPane;
     private JTextArea txtArea;
@@ -39,10 +36,13 @@ public class Interface extends JFrame {
     private int nb_files = 0;
     public JProgressBar progressBar;
     private Interface Me;
+    private int thread_end = 0;
+    private int total_files = 14320;
+    private int current_files = 0;
 
-    public Interface(){
+    public Interface() throws InterruptedException {
 
-      // elements
+        // elements
         Me = this;
         getContentPane().setBackground(new Color(42, 42, 42));
         this.setSize(1000, 600);
@@ -52,7 +52,7 @@ public class Interface extends JFrame {
         this.setTitle("BioInfo");
         getContentPane().setLayout(null);
 
-        ImageIcon II = new ImageIcon("Images/images.jpeg");
+        ImageIcon II = new ImageIcon("Eclipse/Images/images.jpeg");
         ImageIcon icon = new ImageIcon(II.getImage().getScaledInstance(10, 10, Image.SCALE_DEFAULT));
         this.setIconImage(icon.getImage());
 
@@ -88,24 +88,24 @@ public class Interface extends JFrame {
         green.setBounds(35, 20, 89, 20);
         color_info.add(green);
         green.setForeground(Color.WHITE);
-        green.setIcon(new ImageIcon("Images/green.png"));
+        green.setIcon(new ImageIcon("Eclipse/Images/green.png"));
 
         JLabel orange = new JLabel(" actualis\u00E9");
         orange.setBounds(129, 20, 89, 20);
         color_info.add(orange);
-        orange.setIcon(new ImageIcon("Images/orange.png"));
+        orange.setIcon(new ImageIcon("Eclipse/Images/orange.png"));
         orange.setForeground(Color.WHITE);
 
         JLabel blue = new JLabel(" cr\u00E9\u00E9");
         blue.setBounds(233, 20, 89, 20);
         color_info.add(blue);
-        blue.setIcon(new ImageIcon("Images/blue.png"));
+        blue.setIcon(new ImageIcon("Eclipse/Images/blue.png"));
         blue.setForeground(Color.WHITE);
 
         JLabel red = new JLabel(" erreur");
         red.setBounds(319, 20, 89, 20);
         color_info.add(red);
-        red.setIcon(new ImageIcon("Images/red.png"));
+        red.setIcon(new ImageIcon("Eclipse/Images/red.png"));
         red.setForeground(Color.WHITE);
 
         JPanel right_top_panel = new JPanel();
@@ -140,9 +140,14 @@ public class Interface extends JFrame {
         progressBar.setValue(0);
         progressBar.setStringPainted(true);
         right_top_panel.add(progressBar);
+
+        scrollPane = new JScrollPane(arbre);
+
+
         ///
         btnNewButton.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
+
                 if(started == false) {
 
                     started = true;
@@ -153,10 +158,16 @@ public class Interface extends JFrame {
                     //parcourirNoeud(arbre.getModel().getRoot());
                 }
 
-                listRoot();
 
+                updateTree();
+
+
+                /*
+                listRoot();
                 arbre.setCellRenderer(new FileTreeCellRenderer());
                 arbre.setRootVisible(true);
+                */
+
                 //JFrame.getFrames()[1].setSize(0,0);
                 //JFrame.getFrames()[1].setLocation(0,1400);
                 //}
@@ -194,7 +205,7 @@ public class Interface extends JFrame {
         txtArea.setBackground(new Color(51, 51, 51));
         right_bottom_panel.add(txtArea);
         this.setVisible(true);
-        AddMsgLog("Interface fonctionelle") ;
+        AddMsgLog("interface fonctionelle") ;
 
 
 
@@ -204,22 +215,41 @@ public class Interface extends JFrame {
         scrollPane2.setForeground(SystemColor.window);
         scrollPane2.setBounds(10, 60, 516, 185);
         scrollPane2.setBackground(new Color(51, 51, 51));
+        scrollPane2.getVerticalScrollBar().setPreferredSize(new Dimension(15, 0));
         right_bottom_panel.add(scrollPane2);
         this.setVisible(true);
 
-        //tree
+
+
+        Runnable runner = new updateTree(Me);
+        Thread t = new Thread(runner);
+        t.start();
+
+        updateTree();
+        /*
         listRoot();
         arbre.setCellRenderer(new FileTreeCellRenderer());
         arbre.setRootVisible(true);
+        */
+
 
     }
 
     // to update progressBar
-    public void setPercentage(int p) {
-        if (p == 100) {
-            AddMsgLog("Terminé");
+    public void updatePercentage(int p) {
+        current_files = current_files + 1;
+        if (p == -1) {
+            thread_end = thread_end + 1;
         }
-        progressBar.setValue(p);
+        if (thread_end == 4) {
+            AddMsgLog("Terminé");
+            progressBar.setValue(100);
+
+        }
+        else {
+
+            progressBar.setString(String.format("%.2f%%", 100 * (float) current_files / total_files));
+        }
     }
 
     // to set a message in logs
@@ -227,18 +257,30 @@ public class Interface extends JFrame {
         txtArea.setText(txtArea.getText() + "Info : "+  msg + "\n");
     }
 
+    public void updateTree() {
+        DefaultMutableTreeNode root = new DefaultMutableTreeNode();
+        DefaultTreeModel model = new DefaultTreeModel(root);
+        arbre = new JTree(model);
+
+        arbre = null;
+        arbre = new JTree(new DefaultMutableTreeNode("GenBank"));
+        listRoot();
+        arbre.setCellRenderer(new FileTreeCellRenderer());
+        arbre.setRootVisible(true);
+
+    }
     //
     void parcourirNoeud(Object r)
     {
-        //System.out.println(r.getClass());
+
         TreeNode root = (TreeNode)r;
-        //System.out.println(root);
+
         for (int i = 0; i < root.getChildCount(); i++)
         {
             if (root.getChildAt(i).isLeaf()) {
                 DefaultMutableTreeNode dmtn = (DefaultMutableTreeNode) root.getChildAt(i);
                 MyFile f = (MyFile) dmtn.getUserObject();
-                System.out.println(f.getName());
+
             }
             else {
                 parcourirNoeud(root.getChildAt(i));
@@ -249,7 +291,7 @@ public class Interface extends JFrame {
     // create tree
     public void listRoot(){
         this.racine = new DefaultMutableTreeNode("GenBank");
-        File folder = new File("results");
+        File folder = new File("Results");
 
         //for(File file : File.listRoots()){
         for (File file : folder.listFiles()) {
@@ -266,37 +308,23 @@ public class Interface extends JFrame {
             }
         }
 
+
         UIManager.put("Tree.rendererFillBackground", false);
 
+
+
         arbre = new JTree(this.racine);
+        //arbre.updateUI();
         arbre.setBorder(new EmptyBorder(0, 0, 0, 0));
         arbre.setBackground(new Color(51, 51, 51));
-        arbre.addTreeSelectionListener(new TreeSelectionListener(){
-            public void valueChanged(TreeSelectionEvent event) {
-                TreePath tp = event.getNewLeadSelectionPath();
-                if(arbre.getLastSelectedPathComponent() != null){
 
-                    Object o = arbre.getLastSelectedPathComponent();
-                    //DefaultMutableTreeNode dmtn = (DefaultMutableTreeNode) o;
 
-                    //MyFile f = (MyFile) dmtn.getUserObject();
-
-                    //String name = ((MyFile) o.).getName() ;
-                    //System.out.println(f.getName());
-                    if (o instanceof MyFile) {
-                        System.out.println(((MyFile) o).getName());
-                    }
-                    else {
-                        System.out.println(arbre.getLastSelectedPathComponent().toString());
-                    }
-                }
-            }
-        });
 
 
         // element
         getContentPane().setLayout(null);
         //Que nous pla�ons sur le ContentPane de notre JFrame � l'aide d'un scroll
+        getContentPane().remove(scrollPane);
         scrollPane = new JScrollPane(arbre);
         scrollPane.setBorder(BorderFactory.createEmptyBorder());
         scrollPane.setComponentOrientation(ComponentOrientation.RIGHT_TO_LEFT);
@@ -346,8 +374,8 @@ public class Interface extends JFrame {
         }
     }
 
-// main
-    public static void main(String[] args){
+    // main
+    public static void main(String[] args) throws InterruptedException {
         Interface fen = new Interface();
     }
 
@@ -364,22 +392,23 @@ public class Interface extends JFrame {
 
         public Component getTreeCellRendererComponent(JTree tree, Object value, boolean selected, boolean expanded,
                                                       boolean leaf, int row, boolean hasFocus) {
+
             Object o = ((DefaultMutableTreeNode) value).getUserObject();
             if (o instanceof MyFile) {
                 MyFile f = (MyFile) o;
 
                 ImageIcon imageIcon = null;
                 if (f.getStatus().equals("same")) {
-                    imageIcon = new ImageIcon("Images/green.png");
+                    imageIcon = new ImageIcon("Eclipse/Images/green.png");
                 }
                 if (f.getStatus().equals("update")) {
-                    imageIcon = new ImageIcon("Images/orange.png");
+                    imageIcon = new ImageIcon("Eclipse/Images/orange.png");
                 }
                 if (f.getStatus().equals("created")) {
-                    imageIcon = new ImageIcon("Images/blue.png");
+                    imageIcon = new ImageIcon("Eclipse/Images/blue.png");
                 }
                 if (f.getStatus().equals("error")) {
-                    imageIcon = new ImageIcon("Images/red.png");
+                    imageIcon = new ImageIcon("Eclipse/Images/red.png");
                 }
 
 
@@ -390,7 +419,7 @@ public class Interface extends JFrame {
                 label.setText(f.getName());
                 //label.setForeground(Color.WHITE);
             } else {
-                label.setIcon(new ImageIcon("Images/directory.png"));
+                label.setIcon(new ImageIcon("Eclipse/Images/directory.png"));
                 label.setText("" + value);
             }
             return label;
