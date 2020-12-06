@@ -25,7 +25,7 @@ public class thread implements Runnable {
     @Override
     public void run() {
         System.out.println("Thread:" + this.type + " " + this.file_type);
-        //I.AddMsgLog("thread lancé pour " + type) ;
+        I.AddMsgLog("thread lancé pour " + type) ;
         findInFile s = new findInFile();
         Dezip u      = new Dezip();
         stat stat    = new stat();
@@ -50,24 +50,20 @@ public class thread implements Runnable {
             list_Name = list_charac.get(0);
             list_Group = list_charac.get(1);
             list_SubGroup = list_charac.get(2);
-
-            //list_GCA = list_charac.get(3);
-                /*
-                System.out.println(Arrays.toString(list_Name.toArray()));
-                System.out.println(Arrays.toString(list_Group.toArray()));
-                System.out.println(Arrays.toString(list_SubGroup.toArray()));
-                */
-
-            //System.out.println(Arrays.toString(list_GCA.toArray()));
             String[] pathName1;
             String[] pathName;
-
-            I.AddMsgLog("file downloading for " + type);
+            int treated= 0;
+            int step = -1;
 
             for (String a : list_Name) {
+                treated= treated+1;
+                if((int)((float)treated/list_Name.size()*100)%10 == 0 && (int)((float)treated/list_Name.size()*100)!=step){
+                    step = (int)((float)treated/list_Name.size()*100);
+                    I.AddMsgLog("file downloading for " + this.type + " "+(int)((float)treated/list_Name.size()*100)+"%");
+                }
+
                 //looking for the path ot downloads in the summary.txt which contains all of informations wih a given name
                 path = s.findPathInFile(Paths.get("summary.txt"), a, 0);
-                //System.out.println("__________________" + list_Name.size());
                 if (path.length() > 5) {
                     pathName1 = path.split("\t", 2);
                     pathName = pathName1[0].split("/", 10);
@@ -76,11 +72,11 @@ public class thread implements Runnable {
                     }
                 }
             }
-            //System.out.println(Arrays.toString(list_path.toArray()));
+            I.AddMsgLog("End ! File downloading for " + type);
+
         } catch (IOException e) {
             e.printStackTrace();
         }
-
 
         for (int r = 0; r < list_path.size(); r++) {
             int avancement = file_type + (int)((r/list_path.size())/4);
@@ -95,34 +91,20 @@ public class thread implements Runnable {
                 continue;
             }
 
-            I.AddMsgLog("treating " + Name_genome);
-                /*
-                try {
-                    fna = new URL(list_path.get(r)).openStream();
-                    System.out.println(list_path.get(r));
-
-
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }*/
+            I.AddMsgLog("treating " + Name_genome + " type : "+type);
             String filenameDNA = "DownloadDone" + file_type + ".txt";
             String DNA_source = "DNA_file" + file_type + ".gbff.gz";
 
 
             try {
-                //System.out.println(list_path.get(r));
                 FileUtils.copyURLToFile(
                         new URL(list_path.get(r)),
                         new File(Paths.get(DNA_source).toString()));
-                //Files.copy(fna, Paths.get("DNA_file.gbff.gz"), StandardCopyOption.REPLACE_EXISTING);
 
             } catch (IOException e) {
                 e.printStackTrace();
             }
 
-
-
-            //NEW
             String[] link_name = link.split("/");
             String link_name_temp=link_name[0] + "/";
             for (int i=1;i<link_name.length;i++){
@@ -142,15 +124,15 @@ public class thread implements Runnable {
                     }
                     try {
                         xls_file_general.close();
+                        System.out.println("create general file: " +exist);
                     } catch (IOException e) {
                         e.printStackTrace();
                     } catch (WriteException e) {
                         e.printStackTrace();
                     }
                 }
-                System.out.println("create file: " +exist);
+
             }
-            //END NEW
 
             u.gunzipIt(DNA_source, filenameDNA);
             File file_to_delete = new File(DNA_source);
@@ -260,10 +242,7 @@ public class thread implements Runnable {
             file_to_delete.delete();
 
             this.I.AddMsgLog("done with " + Name_genome);
-
             this.I.updatePercentage(1);
-
-
 
         }
 

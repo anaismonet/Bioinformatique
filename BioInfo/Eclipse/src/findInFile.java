@@ -360,8 +360,6 @@ public class findInFile {
         return xls_file;
     }
 
-    // NEW sam 17h50
-
     // Write General Information in front of each xls file that resume all data treated in the folder
     public WritableWorkbook write_xlsFile_GI_Folder(WritableWorkbook xls_file, String NameGroup) {
         try{
@@ -424,8 +422,6 @@ public class findInFile {
         }
         return 0;
     }
-
-    // END NEW sam 17h50
 
     // get all the sequence of a genome "ACGTGCACGTAGAC...."
     public List<String> get_seq(final Path file,List<List> list_by_NC, final int flags) {

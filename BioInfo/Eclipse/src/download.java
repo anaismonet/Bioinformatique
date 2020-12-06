@@ -35,13 +35,6 @@ class download implements Runnable{
 
         List<String> list_type = new ArrayList<>();
 
-        //Interface I = new Interface();
-
-        //findInFile s = new findInFile();
-        //Dezip u = new Dezip();
-        //stat stat = new stat();
-        //Create_treestructure createstruct = new Create_treestructure();
-
         //arborescence
         File dossier = new File("Results");
         File eukaryotes = new File("./Results/Eukaryotes");
@@ -111,7 +104,7 @@ class download implements Runnable{
                 }
             }
             else {
-                Runnable runner = new thread("Eukaryotes", 0, this.I);
+                Runnable runner = new thread("Viruses", 3, this.I);
                 Thread t = new Thread(runner);
                 t.start();
             }
